@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/golang/glog"
@@ -13,6 +15,11 @@ import (
 
 func main() {
 	flag.Parse()
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
 	file, err := os.Open("api.json")
 	if err != nil {
 		glog.Fatal(err)
@@ -24,7 +31,7 @@ func main() {
 	if err != nil {
 		glog.Fatal(err)
 	}
-	err = generate.GenerateServiceDoc(myapi)
+	err = generate.Build(myapi)
 	if err != nil {
 		glog.Fatal(err)
 	}
