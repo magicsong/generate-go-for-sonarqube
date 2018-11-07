@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/golang/glog"
 	"github.com/magicsong/generate-go-for-sonarqube/pkg/api"
@@ -26,20 +28,33 @@ func init() {
 	flag.Usage = usage
 }
 
+func validate() error {
+	reg := regexp.MustCompile(`[a-z]+`)
+	if !reg.MatchString(PackageName) {
+		return errors.New("Ilegal package name:" + PackageName)
+	}
+	if JsonPath == "" {
+		return errors.New("Must specify the json location,please add -f [filepath]")
+	}
+	_, err := os.Stat(JsonPath) //os.Stat获取文件信息
+	if err != nil {
+		glog.Errorln(err)
+		return errors.New("No such api file")
+	}
+	return nil
+}
+
 func main() {
 	flag.Parse()
 	if h {
 		flag.Usage()
 		return
 	}
-	if JsonPath == "" {
-		glog.Fatal("Must specify the json location,please add -f [filepath]")
-	}
-	_, err := os.Stat(JsonPath) //os.Stat获取文件信息
+	err := validate()
 	if err != nil {
-		glog.Fatal("No such api file")
+		glog.Error(err)
+		os.Exit(1)
 	}
-
 	file, err := os.Open(JsonPath)
 	if err != nil {
 		glog.Fatal(err)
@@ -49,7 +64,9 @@ func main() {
 	myapi := new(api.API)
 	err = decoder.Decode(myapi)
 	if err != nil {
-		glog.Fatal(err)
+		glog.Error(err)
+		glog.Errorln("cannot decode api file")
+		os.Exit(1)
 	}
 	err = generate.Build(PackageName, OutputPath, myapi)
 	if err != nil {
