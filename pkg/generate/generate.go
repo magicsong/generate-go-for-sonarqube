@@ -100,33 +100,48 @@ func GenerateGoContent(packageName string, service *api.WebService) (f *gen.File
 //GenerateServiceActionContent generate code of each service,include api method and related structs
 func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.Statement {
 	c := gen.Line()
-	optionName := strcase.ToCamel(serviceName + action.Key + "Option")
-	c.Type().Id(optionName).StructFunc(func(g *gen.Group) {
-		for _, field := range action.Params {
-			if strings.Contains(strings.ToLower(field.Description), "deprecated") {
-				glog.V(0).Infof("Detected deprecated field <%s> in <action>:%s,description:%s\n", field.Key, action.Key, field.Description)
-				continue
+	hasOption := true
+	optionName := strcase.ToCamel(serviceName + "_" + action.Key + "Option")
+	respName := strcase.ToCamel(serviceName + "_" + action.Key + "Resp")
+	if len(action.Params) == 0 {
+		hasOption = false
+	}
+	//create resp struct
+	c.Commentf("[TODO] you should call the <%s> func manually and complete the fields of this struct", strcase.ToCamel(action.Key)).Line()
+	c.Type().Id(respName).Struct().Line()
+	if hasOption {
+		c.Type().Id(optionName).StructFunc(func(g *gen.Group) {
+			for _, field := range action.Params {
+				if strings.Contains(strings.ToLower(field.Description), "deprecated") {
+					glog.V(0).Infof("Detected deprecated field <%s> in <action>:%s,description:%s\n", field.Key, action.Key, field.Description)
+					continue
+				}
+				g.Id(strcase.ToCamel(field.Key)).String().Tag(map[string]string{"url": field.Key + ",omitempty"}).Commentf("Description:\"%s\",ExampleValue:\"%s\"", field.Description, field.ExampleValue)
 			}
-			g.Id(strcase.ToCamel(field.Key)).String().Commentf("Description:\"%s\",ExampleValue:\"%s\"", field.Description, field.ExampleValue)
-		}
-	}).Line()
+		}).Line()
 
-	//create valid method
-	validation.Func().Params(gen.Id("s").Op("*").Id(strings.Title(serviceName) + "Service")).Id("Validate" + strcase.ToCamel(action.Key) + "Opt").Params(
-		gen.Id("opt").Op("*").Id(optionName)).Params(gen.Op("*").Qual("github.com/magicsong/generate-go-for-sonarqube/pkg/validation", "Error")).Block(
-		gen.Return(gen.Nil()),
-	)
+		//create valid method
+		validation.Func().Params(gen.Id("s").Op("*").Id(strings.Title(serviceName) + "Service")).Id("Validate" + strcase.ToCamel(action.Key) + "Opt").Params(
+			gen.Id("opt").Op("*").Id(optionName)).Params(gen.Op("*").Qual("github.com/magicsong/generate-go-for-sonarqube/pkg/validation", "Error")).Block(
+			gen.Return(gen.Nil()),
+		)
+	}
 	//create method
 	method := "GET"
 	if action.Post {
 		method = "POST"
 	}
 	c.Commentf("%s %s", strings.Title(action.Key), action.Description).Line()
-	c.Func().Params(gen.Id("s").Op("*").Id(strings.Title(serviceName)+"Service")).Id(strings.Title(action.Key)).Params(
-		gen.Id("opt").Op("*").Id(optionName)).Params(
-		gen.Id("Resp").Op("*").Interface(), gen.Err().Error()).BlockFunc(func(g *gen.Group) {
-		g.Err().Op(":=").Id("s").Dot("Validate" + strings.Title(action.Key) + "Opt").Call(gen.Id("opt"))
-		ErrorHandlerHelper(g)
+	c.Func().Params(gen.Id("s").Op("*").Id(strings.Title(serviceName)+"Service")).Id(strings.Title(action.Key)).ParamsFunc(func(g *gen.Group) {
+		if hasOption {
+			g.Id("opt").Op("*").Id(optionName)
+		}
+	}).Params(
+		gen.Id("Resp").Op("*").Id(respName), gen.Err().Error()).BlockFunc(func(g *gen.Group) {
+		if hasOption {
+			g.Err().Op(":=").Id("s").Dot("Validate" + strings.Title(action.Key) + "Opt").Call(gen.Id("opt"))
+			ErrorHandlerHelper(g)
+		}
 		g.List(gen.Id("req"), gen.Id("err")).Op(":=").Id("s").Dot("client").Dot("NewRequest").Call(gen.Lit(method), gen.Lit(serviceName+"/"+action.Key), gen.Id("Opt"))
 		ErrorHandlerHelper(g)
 		g.Err().Op("=").Id("s").Dot("client").Dot("Do").Call(gen.Id("req"), gen.Id("Resp"))
