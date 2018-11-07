@@ -20,33 +20,6 @@ const (
 	privateToken
 )
 
-type Client struct {
-	baseURL            *url.URL
-	username, password string
-	token              string
-	authType           authType
-	httpClient         *http.Client
-	Users              *UsersService
-	Projects           *ProjectService
-	Groups             *GroupService
-}
-
-func NewClient(endpoint, username, password string) (*Client, error) {
-	c := &Client{username: username, password: password, authType: basicAuth, httpClient: http.DefaultClient}
-	if endpoint == "" {
-		c.SetBaseURL(defaultBaseURL)
-
-	} else {
-		if err := c.SetBaseURL(endpoint); err != nil {
-			return nil, err
-		}
-	}
-	c.Users = &UsersService{client: c}
-	c.Projects = &ProjectService{client: c}
-	c.Groups = &GroupService{client: c}
-	return c, nil
-}
-
 func (c *Client) BaseURL() *url.URL {
 	u := *c.baseURL
 	return &u
