@@ -12,15 +12,17 @@ import (
 )
 
 var (
-	h          bool
-	JsonPath   string
-	OutputPath string
+	h           bool
+	JsonPath    string
+	OutputPath  string
+	PackageName string
 )
 
 func init() {
 	flag.BoolVar(&h, "h", false, "this help")
 	flag.StringVar(&JsonPath, "f", "", "specify location of api file(only support local file)")
 	flag.StringVar(&OutputPath, "o", ".", "specify the destination dir, default is current workspace")
+	flag.StringVar(&PackageName, "n", "sonarqube", "specify the name of generated package,default is \"sonarqube\"")
 	flag.Usage = usage
 }
 
@@ -49,7 +51,7 @@ func main() {
 	if err != nil {
 		glog.Fatal(err)
 	}
-	err = generate.Build(OutputPath, myapi)
+	err = generate.Build(PackageName, OutputPath, myapi)
 	if err != nil {
 		glog.Fatal(err)
 	}
