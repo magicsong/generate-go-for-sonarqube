@@ -33,7 +33,7 @@ func GenerateClient() error {
 		g.Id("authType").Id("authType")
 		g.Id("httpClient").Op("*").Qual("net/http", "Client")
 		for _, service := range services {
-			g.Id(strings.Title(service)).Op("*").Id(strings.Title(service) + "Service")
+			g.Id(strcase.ToCamel(service)).Op("*").Id(strcase.ToCamel(service) + "Service")
 		}
 	})
 	client.Func().Id("NewClient").Params(gen.List(gen.Id("endpoint"), gen.Id("username"), gen.Id("password")).String()).Params(gen.Op("*").Id("Client"), gen.Error()).BlockFunc(func(g *gen.Group) {
@@ -48,7 +48,7 @@ func GenerateClient() error {
 			)),
 		)
 		for _, service := range services {
-			g.Id("c").Dot(strcase.ToCamel(service)).Op("=&").Id(strcase.ToCamel(service) + "Service").Block(gen.Id("client").Op(":").Id("c"))
+			g.Id("c").Dot(strcase.ToCamel(service)).Op("=&").Id(strcase.ToCamel(service) + "Service").Values(gen.Dict{gen.Id("client"): gen.Id("c")})
 		}
 		g.Return(gen.Id("c"), gen.Nil())
 	})
@@ -122,7 +122,7 @@ func GenerateGoContent(packageName string, service *api.WebService) (f *gen.File
 
 	name := service.Path[4:]
 	//Create Service Struct
-	f.Type().Id(strings.Title(name) + "Service").Struct(
+	f.Type().Id(strcase.ToCamel(name) + "Service").Struct(
 		gen.Id("client").Op("*").Id("Client"),
 	).Line()
 
@@ -157,7 +157,7 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.S
 		}).Line()
 
 		//create valid method
-		validation.Func().Params(gen.Id("s").Op("*").Id(strings.Title(serviceName) + "Service")).Id("Validate" + strcase.ToCamel(action.Key) + "Opt").Params(
+		validation.Func().Params(gen.Id("s").Op("*").Id(strcase.ToCamel(serviceName) + "Service")).Id("Validate" + strcase.ToCamel(action.Key) + "Opt").Params(
 			gen.Id("opt").Op("*").Id(optionName)).Params(gen.Op("*").Qual("github.com/magicsong/generate-go-for-sonarqube/pkg/validation", "Error")).Block(
 			gen.Return(gen.Nil()),
 		)
@@ -168,14 +168,14 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.S
 		method = "POST"
 	}
 	c.Commentf("%s %s", strings.Title(action.Key), action.Description).Line()
-	c.Func().Params(gen.Id("s").Op("*").Id(strings.Title(serviceName)+"Service")).Id(strings.Title(action.Key)).ParamsFunc(func(g *gen.Group) {
+	c.Func().Params(gen.Id("s").Op("*").Id(strcase.ToCamel(serviceName)+"Service")).Id(strcase.ToCamel(action.Key)).ParamsFunc(func(g *gen.Group) {
 		if hasOption {
 			g.Id("opt").Op("*").Id(optionName)
 		}
 	}).Params(
 		gen.Id("Resp").Op("*").Id(respName), gen.Err().Error()).BlockFunc(func(g *gen.Group) {
 		if hasOption {
-			g.Err().Op(":=").Id("s").Dot("Validate" + strings.Title(action.Key) + "Opt").Call(gen.Id("opt"))
+			g.Err().Op(":=").Id("s").Dot("Validate" + strcase.ToCamel(action.Key) + "Opt").Call(gen.Id("opt"))
 			ErrorHandlerHelper(g)
 		}
 		g.List(gen.Id("req"), gen.Id("err")).Op(":=").Id("s").Dot("client").Dot("NewRequest").Call(gen.Lit(method), gen.Lit(serviceName+"/"+action.Key), gen.Id("Opt"))
