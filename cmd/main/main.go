@@ -86,7 +86,7 @@ func main() {
 
 func usage() {
 	fmt.Fprintf(os.Stderr, ` generate-go-for-sonarqube version: 0.0.1
-Usage: main.go [-h] -f jsonpath  -e endpoint [-o outputpath]  [-u username] [-p password] 
+Usage: main.go [-h] -f jsonpath  -e endpoint [-n packagename] [-o outputpath]  [-u username] [-p password] 
 
 Options:
 `)
