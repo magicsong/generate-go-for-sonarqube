@@ -21,7 +21,8 @@ type Action struct {
 	HasResponseExample bool        `json:"hasResponseExample"`
 	Changelog          []Changelog `json:"changelog"`
 	Params             []Param     `json:"params"`
-	DeprecatedSince    *string     `json:"deprecatedSince,omitempty"`
+	DeprecatedSince    string      `json:"deprecatedSince,omitempty"`
+	ResponseType       string      `json:"responseType,omitempty"`
 }
 
 type Changelog struct {

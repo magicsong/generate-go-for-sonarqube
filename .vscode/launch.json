@@ -11,7 +11,14 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {},
-            "args": []
+            "args": ["-v=2","-logtostderr=true", "-f=../../assets/api.json", "-e=http://192.168.98.8:9000/api","-o=../../test"],
+            "dlvLoadConfig": {
+                "followPointers": true,
+                "maxVariableRecurse": 1,
+                "maxStringLen": 1000,
+                "maxArrayValues": 64,
+                "maxStructFields": -1
+            }
         }
     ]
 }

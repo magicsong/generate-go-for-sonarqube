@@ -8,7 +8,7 @@ import (
 
 const ConstFileName = "generated_static_file_const.go"
 
-var staticFiles = [...]string{"sonarqube.go", "webclient.go"}
+var staticFiles = [...]string{"sonarqube.go.temp", "client_util.go.temp"}
 var staticName = [...]string{"SonarqubeConst", "WebClientConst"}
 
 func GenerateStaticFiles(navDir string, outputPath string) error {

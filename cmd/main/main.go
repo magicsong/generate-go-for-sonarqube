@@ -8,7 +8,9 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/golang/glog"
+	"github.com/fatih/color"
+
+	"github.com/magicsong/color-glog"
 	"github.com/magicsong/generate-go-for-sonarqube/pkg/api"
 	"github.com/magicsong/generate-go-for-sonarqube/pkg/generate"
 )
@@ -18,6 +20,9 @@ var (
 	JsonPath    string
 	OutputPath  string
 	PackageName string
+	Endpoint    string
+	Username    string
+	Password    string
 )
 
 func init() {
@@ -25,6 +30,9 @@ func init() {
 	flag.StringVar(&JsonPath, "f", "", "specify location of api file(only support local file)")
 	flag.StringVar(&OutputPath, "o", ".", "specify the destination dir, default is current workspace")
 	flag.StringVar(&PackageName, "n", "sonarqube", "specify the name of generated package,default is \"sonarqube\"")
+	flag.StringVar(&Endpoint, "e", "", "specify the web url of sonarqube")
+	flag.StringVar(&Username, "u", "admin", "specify the username,default is \"admin\"")
+	flag.StringVar(&Password, "p", "admin", "specify the password ,default is \"admin\"")
 	flag.Usage = usage
 }
 
@@ -68,15 +76,17 @@ func main() {
 		glog.Errorln("cannot decode api file")
 		os.Exit(1)
 	}
-	err = generate.Build(PackageName, OutputPath, myapi)
+	err = generate.Build(PackageName, OutputPath, Endpoint, Username, Password, myapi)
 	if err != nil {
 		glog.Fatal(err)
+	} else {
+		color.Green("Go files generated successfully")
 	}
 }
 
 func usage() {
 	fmt.Fprintf(os.Stderr, ` generate-go-for-sonarqube version: 0.0.1
-Usage: main.go [-h] -f jsonpath [-o outputpath] 
+Usage: main.go [-h] -f jsonpath  -e endpoint [-o outputpath]  [-u username] [-p password] 
 
 Options:
 `)
