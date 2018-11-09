@@ -1,5 +1,3 @@
-package sonarqube
-
 import (
 	"bytes"
 	"encoding/json"

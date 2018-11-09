@@ -2,6 +2,7 @@ package generate
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -115,11 +116,13 @@ func Build(pkgName, workingDir, endpoint, username, password string, apidoc *api
 }
 
 func AddStaticFile() error {
-	err := ioutil.WriteFile(WorkingDir+"/sonarqube.go", []byte(SonarqubeConst), 0644)
+	s1 := fmt.Sprintf("package %s\n\n%s", PackageName, SonarqubeConst)
+	s2 := fmt.Sprintf("package %s\n\n%s", PackageName, WebClientConst)
+	err := ioutil.WriteFile(WorkingDir+"/sonarqube.go", []byte(s1), 0644)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(WorkingDir+"/client_util.go", []byte(WebClientConst), 0644)
+	return ioutil.WriteFile(WorkingDir+"/client_util.go", []byte(s2), 0644)
 }
 
 func GenerateGoContent(packageName string, service *api.WebService) (f *gen.File, err error) {

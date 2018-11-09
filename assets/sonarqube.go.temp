@@ -1,5 +1,3 @@
-package sonarqube
-
 import (
 	"net/http"
 	"net/url"
