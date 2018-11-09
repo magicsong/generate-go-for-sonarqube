@@ -133,7 +133,7 @@ func GenerateGoContent(packageName string, service *api.WebService) (f *gen.File
 		return nil, errors.New("package name is illegal")
 	}
 	f = gen.NewFile(packageName)
-	f.CanonicalPath = "github.com/magicsong/generate-go-for-sonarqube/pkg/" + PackageName
+
 	f.PackageComment(service.Description)
 	f.ImportName("github.com/google/glog", "glog")
 
