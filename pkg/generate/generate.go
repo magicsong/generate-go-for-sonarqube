@@ -25,6 +25,7 @@ var (
 	Endpoint        string
 	Username        string
 	Password        string
+	CurrentRepo     string
 )
 
 func init() {
@@ -114,7 +115,36 @@ func Build(pkgName, workingDir, endpoint, username, password string, apidoc *api
 	//Write validation file
 	return validation.Save(WorkingDir + "/validation.go")
 }
-
+func AddIntegrationFile(service *api.WebService) {
+	serviceName := strcase.ToCamel(service.Path[4:])
+	_ = os.MkdirAll("integration_testing/"+service.Path, os.ModeDir)
+	f := gen.NewFile("main")
+	f.ImportName("github.com/magicsong/color-glog", "glog")
+	helperCode := `func TestHelper(action,service string, do doFunc){
+		start:=time.Now()
+		glog.Infof("Test action <%s> in service <%s>",action,service)
+		if err:=doFunc();err!=nil{
+			glog.Errorf("Test FAILED in %s of service %s, please check the error:%v",action,service,err)
+			os.Exit(1)
+		}
+		glog.Infof("Test SUCCESSFUL in %s of service %s, elapsed time: %ds",action,service,time.Now().Sub(start).Seconds())
+	}`
+	f.Op(helperCode).Line()
+	f.Func().Id("main").Call().BlockFunc(func(g *gen.Group) {
+		g.Qual("flag", "parse").Call()
+		for _, action := range service.Actions {
+			actionName := strcase.ToCamel(action.Key)
+			g.Id("TestHelper").Call(gen.Lit(actionName), gen.Lit(serviceName), gen.Id("Test"+actionName))
+		}
+		g.Qual("github.com/magicsong/color-glog", "Infoln").Call(gen.Lit("^_^ Test ALl Pass"))
+	})
+	for _, action := range service.Actions {
+		actionName := strcase.ToCamel(action.Key)
+		f.Func().Id("Test" + actionName).Call().Error().BlockFunc(func(g *gen.Group) {
+			g.List(gen.Id("client"), gen.Err()).Op(":=").Qual("", "")
+		})
+	}
+}
 func AddStaticFile() error {
 	s1 := fmt.Sprintf("package %s\n\n%s", PackageName, SonarqubeConst)
 	s2 := fmt.Sprintf("package %s\n\n%s", PackageName, WebClientConst)
@@ -202,7 +232,7 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.S
 
 		//create valid method
 		validation.Func().Params(gen.Id("s").Op("*").Id(strcase.ToCamel(serviceName) + "Service")).Id("Validate" + strcase.ToCamel(action.Key) + "Opt").Params(
-			gen.Id("opt").Op("*").Id(optionName)).Params(gen.Op("*").Qual("github.com/magicsong/generate-go-for-sonarqube/pkg/validation", "Error")).Block(
+			gen.Id("opt").Op("*").Id(optionName)).Params(gen.Op("*").Error()).Block(
 			gen.Return(gen.Nil()),
 		)
 	}
@@ -211,7 +241,7 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.S
 	if action.Post {
 		method = "POST"
 	}
-	c.Commentf("%s %s", strings.Title(action.Key), action.Description).Line()
+	c.Commentf("%s %s", strcase.ToCamel(action.Key), action.Description).Line()
 	c.Func().Params(gen.Id("s").Op("*").Id(strcase.ToCamel(serviceName) + "Service")).Id(strcase.ToCamel(action.Key)).ParamsFunc(func(g *gen.Group) {
 		if hasOption {
 			g.Id("opt").Op("*").Id(optionName)
@@ -222,8 +252,10 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.S
 			g.Id("resp").Op("*").Id(respName)
 		case "txt", "log":
 			g.Id("resp").Op("*").String()
+			respName = "string"
 		default:
 			g.Id("resp").Op("*").String()
+			respName = "string"
 		}
 		g.Err().Error()
 	}).BlockFunc(func(g *gen.Group) {
@@ -231,8 +263,17 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *gen.S
 			g.Err().Op("=").Id("s").Dot("Validate" + strcase.ToCamel(action.Key) + "Opt").Call(gen.Id("opt"))
 			ErrorHandlerHelper(g)
 		}
-		g.List(gen.Id("req"), gen.Id("err")).Op(":=").Id("s").Dot("client").Dot("NewRequest").Call(gen.Lit(method), gen.Lit(serviceName+"/"+action.Key), gen.Id("opt"))
+		g.List(gen.Id("req"), gen.Id("err")).Op(":=").Id("s").Dot("client").Dot("NewRequest").CallFunc(func(g *gen.Group) {
+			g.Lit(method)
+			g.Lit(serviceName + "/" + action.Key)
+			if hasOption {
+				g.Id("opt")
+			} else {
+				g.Nil()
+			}
+		})
 		ErrorHandlerHelper(g)
+		g.Id("resp").Op("=").New(gen.Id(respName))
 		g.Err().Op("=").Id("s").Dot("client").Dot("Do").Call(gen.Id("req"), gen.Id("resp"))
 		ErrorHandlerHelper(g)
 		g.Return()
@@ -246,4 +287,15 @@ func ErrorHandlerHelper(g *gen.Group) {
 	).Block(
 		gen.Return(),
 	)
+}
+
+func GetCurrentRepo(workingDir, currentDir string) (string, error) {
+	gosrc := os.Getenv("GOPATH") + "/src"
+	if currentDir[:len(gosrc)] != gosrc {
+		return "", errors.New("current location is not in $GOPATH/src")
+	}
+	if len(currentDir) == len(gosrc) {
+		return "", errors.New("current location should be in subdir of $GOPATH/src")
+	}
+	return currentDir[len(gosrc)+1:] + "/" + workingDir, nil
 }

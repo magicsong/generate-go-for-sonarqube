@@ -36,3 +36,11 @@
 [[constraint]]
   name = "github.com/onsi/gomega"
   version = "1.4.2"
+
+[[override]]
+  name = "gopkg.in/fsnotify.v1"
+  source = "https://github.com/fsnotify/fsnotify.git"
+
+[[constraint]]
+  name = "github.com/onsi/ginkgo"
+  version = "1.6.0"
