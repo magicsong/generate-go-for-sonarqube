@@ -144,10 +144,10 @@ func AddIntegrationFile(service *api.WebService) error {
 	f.ImportAlias("github.com/onsi/gomega", ".")
 	f.ImportAlias(CurrentRepo, ".")
 	f.Var().Id("_").Op("=").Qual("github.com/onsi/ginkgo", "Describe").Call(Lit("SonarCLI integration test"), Func().Call().BlockFunc(func(g *Group) {
-		g.Var().Id("client").Id("Client")
+		g.Var().Id("client").Op("*").Id("Client")
 		g.Var().Id("err").Error()
 		g.Id("BeforeEach").Call(Func().Call().BlockFunc(func(g1 *Group) {
-			g1.List(Id("client"), Err()).Op(":=").Qual(CurrentRepo, "NewClient").Call(Lit(Endpoint), Lit(Username), Lit(Password))
+			g1.List(Id("client"), Err()).Op("=").Qual(CurrentRepo, "NewClient").Call(Lit(Endpoint), Lit(Username), Lit(Password))
 			g1.Qual("github.com/onsi/gomega", "Expect").Call(Err()).Dot("ShouldNot").Call(Id("HaveOccurred").Call())
 		}))
 		for _, action := range service.Actions {
@@ -157,7 +157,7 @@ func AddIntegrationFile(service *api.WebService) error {
 				hasOption = false
 			}
 			g.Id("Describe").Call(Lit("Test "+actionName+" in "+service.Path), Func().Call().BlockFunc(func(g1 *Group) {
-				g1.Id("It").Call(Lit("Should be ok"), Func().Call().BlockFunc(func(g2 *Group) {
+				g1.Id("PIt").Call(Lit("Should be ok"), Func().Call().BlockFunc(func(g2 *Group) {
 					if hasOption {
 						g2.Id("opt").Op(":= &").Id(strcase.ToCamel(serviceName + "_" + action.Key + "Option")).Values(DictFunc(func(d Dict) {
 							for _, param := range action.Params {
@@ -176,7 +176,7 @@ func AddIntegrationFile(service *api.WebService) error {
 						g2.List(Id("resp"), Err()).Op(":=").Id("client").Dot(serviceName).Dot(actionName).Call()
 					}
 					g2.Id("Expect").Call(Err()).Dot("ShouldNot").Call(Id("HaveOccurred").Call())
-					g2.Id("Expect").Call(Id("resp")).Dot("Should").Call(Id("HaveOccurred").Call())
+					g2.Id("Expect").Call(Op("*").Id("resp")).Dot("To").Call(Id("Equal").Call(Lit("MUST_EDIT_IT")))
 				}))
 			}))
 		}
@@ -303,8 +303,7 @@ func GenerateServiceActionContent(serviceName string, action *api.Action) *State
 			g.Id("resp").Op("*").String()
 			respName = "string"
 		default:
-			g.Id("resp").Op("*").String()
-			respName = "string"
+			g.Id("resp").Op("*").Id(respName)
 		}
 		g.Err().Error()
 	}).BlockFunc(func(g *Group) {
