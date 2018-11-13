@@ -4,8 +4,8 @@
 [[projects]]
   name = "github.com/dave/jennifer"
   packages = ["jen"]
-  revision = "e2c46c587b5f3cf3dec985fd8f7e8232f9e40ac9"
-  version = "v1.1.0"
+  revision = "f915da8d6601a64feaa0a3086c4a6ace38996206"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -173,6 +173,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1a86c4cf79719b4770e39bd4484f2b751183501324e0e32f5de724e46945e49a"
+  inputs-digest = "6b185cf1ee2fa4242bdcad02ce9295a51e95d219ef5d87277d6fb92aeed7529b"
   solver-name = "gps-cdcl"
   solver-version = 1

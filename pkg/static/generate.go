@@ -8,8 +8,8 @@ import (
 
 const ConstFileName = "generated_static_file_const.go"
 
-var staticFiles = [...]string{"sonarqube.go.temp", "client_util.go.temp"}
-var staticName = [...]string{"SonarqubeConst", "WebClientConst"}
+var staticFiles = [...]string{"sonarqube.go.temp", "client_util.go.temp", "suite_test.go.temp"}
+var staticName = [...]string{"SonarqubeConst", "WebClientConst", "TestSuiteConst"}
 
 func GenerateStaticFiles(navDir string, outputPath string) error {
 	f := gen.NewFile("generate")

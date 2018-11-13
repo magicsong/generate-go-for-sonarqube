@@ -1,0 +1,11 @@
+import (
+	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+func TestSonar(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Sonar Suite")
+}
