@@ -191,7 +191,7 @@ func AddStaticFile() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile("integration_testing/sonarqube.go", []byte(s3), 0644)
+	err = ioutil.WriteFile("integration_testing/sonarqube_suite_test.go", []byte(s3), 0644)
 	if err != nil {
 		return err
 	}
