@@ -14,7 +14,7 @@ func ConvertStringToStruct(json, name string) (string, error) {
 	}
 	reader := new(bytes.Buffer)
 	reader.WriteString(json)
-	byts, err := gojson.Generate(reader, gojson.ParseJson, name, []string{"json"}, false, true)
+	byts, err := gojson.Generate(reader, gojson.ParseJson, name, []string{"json"}, true, false)
 	if err != nil {
 		return "", err
 	}

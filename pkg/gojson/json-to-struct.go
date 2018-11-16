@@ -109,6 +109,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/Workiva/go-datastructures/bitarray"
+
 	"github.com/json-iterator/go"
 	"gopkg.in/yaml.v2"
 )
@@ -166,6 +168,9 @@ var intToWordMap = []string{
 	"eight",
 	"nine",
 }
+var cache []bitarray.BitArray = make([]bitarray.BitArray, 0)
+var currentIndex int64 = 0
+var fieldPosition map[string]int64 = make(map[string]int)
 
 type Parser func(io.Reader) (interface{}, error)
 
@@ -268,9 +273,10 @@ func convertKeysToStrings(obj map[interface{}]interface{}) map[string]interface{
 }
 
 // generateTypes Generate go struct entries for a map[string]interface{} structure
-func generateTypes(obj map[string]interface{}, structName string, tags []string, depth int, subStructMap map[string]string, convertFloats bool) string {
-	structure := "struct {"
+func generateTypes(obj map[string]interface{}, structName string, tags []string, depth int, subStructMap map[string]string, convertFloats bool) (string, bitarray.BitArray) {
 
+	structure := "struct {"
+	bits := bitarray.NewSparseBitArray()
 	keys := make([]string, 0, len(obj))
 	for key := range obj {
 		keys = append(keys, key)
@@ -342,7 +348,12 @@ func generateTypes(obj map[string]interface{}, structName string, tags []string,
 		}
 
 		fieldName := FmtFieldName(key)
-
+		pos, ok := fieldPosition[fieldName]
+		if !ok {
+			fieldPosition[fieldName] = currentIndex
+			currentIndex++
+		}
+		bits.SetBit(pos)
 		tagList := make([]string, 0)
 		for _, t := range tags {
 			tagList = append(tagList, fmt.Sprintf("%s:\"%s,omitempty\"", t, key))
@@ -353,7 +364,7 @@ func generateTypes(obj map[string]interface{}, structName string, tags []string,
 			valueType,
 			strings.Join(tagList, " "))
 	}
-	return structure
+	return structure, bits
 }
 
 // FmtFieldName formats a string as a struct key
