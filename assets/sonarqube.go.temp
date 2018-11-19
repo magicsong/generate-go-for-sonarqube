@@ -93,6 +93,6 @@ func (c *Client) NewRequest(method, path string, opt interface{}) (*http.Request
 // error if an API error has occurred. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) error {
+func (c *Client) Do(req *http.Request, v interface{}) (*http.Response,error) {
 	return Do(c.httpClient, req, v)
 }
