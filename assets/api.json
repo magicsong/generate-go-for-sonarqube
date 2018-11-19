@@ -2,7 +2,7 @@
     "webServices": [
         {
             "path": "api/authentication",
-            "description": "Handle authentication. NOT_IN_CLI",
+            "description": "Handle authentication.",
             "actions": [
                 {
                     "key": "login",

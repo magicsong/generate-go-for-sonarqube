@@ -2,44 +2,10 @@
 
 
 [[projects]]
-  name = "github.com/Workiva/go-datastructures"
-  packages = [
-    ".",
-    "augmentedtree",
-    "bitarray",
-    "btree/palm",
-    "btree/plus",
-    "common",
-    "fibheap",
-    "futures",
-    "hashmap/fastinteger",
-    "numerics/optimization",
-    "queue",
-    "rangetree",
-    "rangetree/skiplist",
-    "set",
-    "slice",
-    "slice/skip",
-    "sort",
-    "threadsafe/err",
-    "tree/avl",
-    "trie/xfast",
-    "trie/yfast"
-  ]
-  revision = "f07cbe3f82ca2fd6e5ab94afce65fe43319f675f"
-  version = "v1.0.50"
-
-[[projects]]
   name = "github.com/dave/jennifer"
   packages = ["jen"]
   revision = "f915da8d6601a64feaa0a3086c4a6ace38996206"
   version = "v1.2.0"
-
-[[projects]]
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
-  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
-  version = "v1.1.1"
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -207,6 +173,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3b0000574b596e864e59113b7385372148b271cdce22a8b8e52b39f206e42c0f"
+  inputs-digest = "6b185cf1ee2fa4242bdcad02ce9295a51e95d219ef5d87277d6fb92aeed7529b"
   solver-name = "gps-cdcl"
   solver-version = 1
