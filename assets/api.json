@@ -707,7 +707,7 @@
         {
             "path": "api/editions",
             "since": "6.7",
-            "description": "Manage SonarSource commercial editions.",
+            "description": "Manage SonarSource commercial editions. NOT_IN_CLI",
             "actions": [
                 {
                     "key": "apply_license",

@@ -175,12 +175,8 @@ func AddIntegrationFile(service *api.WebService) error {
 	//construct
 
 	f.Var().Id("_").Op("=").Qual("github.com/onsi/ginkgo", "Describe").Call(Lit("SonarCLI integration test"), Func().Call().BlockFunc(func(g *Group) {
-		g.Var().Id("client").Op("*").Id("Client")
-		g.Var().Id("err").Error()
-		g.Id("BeforeEach").Call(Func().Call().BlockFunc(func(g1 *Group) {
-			g1.List(Id("client"), Err()).Op("=").Qual(CurrentRepo, "NewClient").Call(Lit(Endpoint), Lit(Username), Lit(Password))
-			g1.Qual("github.com/onsi/gomega", "Expect").Call(Err()).Dot("ShouldNot").Call(Id("HaveOccurred").Call())
-		}))
+		g.Id("BeforeEach").Call(Func().Call().Block())
+		g.Id("JustBeforeEach").Call(Func().Call().Block())
 		for _, action := range service.Actions {
 			actionName := strcase.ToCamel(action.Key)
 			hasOption := true
@@ -241,7 +237,7 @@ func AddIntegrationFile(service *api.WebService) error {
 			g.Id("Describe").Call(Lit("Test "+actionName+" in "+service.Path), Func().Call().BlockFunc(func(g1 *Group) {
 				g1.Id("PIt").Call(Lit("Should be ok"), Func().Call().BlockFunc(func(g2 *Group) {
 					if hasOption {
-						g2.Id("opt").Op(":= &").Id(strcase.ToCamel(serviceName + "_" + action.Key + "Option")).Values(DictFunc(func(d Dict) {
+						g2.Id("opt").Op(":= &").Qual(CurrentRepo, strcase.ToCamel(serviceName+"_"+action.Key+"Option")).Values(DictFunc(func(d Dict) {
 							for _, param := range action.Params {
 								if detectDeprecatedField(&param) {
 									continue
@@ -269,7 +265,7 @@ func AddIntegrationFile(service *api.WebService) error {
 							g.Err()
 						}).Op(":=").Id("client").Dot(serviceName).Dot(actionName).Call()
 					}
-					g2.Id("Expect").Call(Err()).Dot("ShouldNot").Call(Id("HaveOccurred").Call())
+					g2.Id("Expect").Call(Err()).Dot("ShouldNot").Call(Qual("github.com/onsi/gomega", "HaveOccurred").Call())
 					g2.Id("Expect").Call(Id("resp").Dot("StatusCode")).Dot("To").Call(Id("Equal").Call(Id("200")))
 					if hasResp {
 						g2.Id("Expect").Call(Op("*").Id("v")).Dot("To").Call(Id("Equal").Call(Lit("MUST_EDIT_IT")))
@@ -285,7 +281,8 @@ func AddIntegrationFile(service *api.WebService) error {
 func AddStaticFile() error {
 	s1 := fmt.Sprintf("package %s\n\n%s", PackageName, SonarqubeConst)
 	s2 := fmt.Sprintf("package %s\n\n%s", PackageName, WebClientConst)
-	s3 := fmt.Sprintf("package %s_test\n\n%s", PackageName, TestSuiteConst)
+	SuiteStr := strings.Replace(TestSuiteConst, "{REPLACE_PACKAGENAME}", ". \""+CurrentRepo+"\"", 1)
+	s3 := fmt.Sprintf("package %s_test\n\n%s", PackageName, SuiteStr)
 	err := ioutil.WriteFile(WorkingDir+"/sonarqube.go", []byte(s1), 0644)
 	if err != nil {
 		return err

@@ -18,6 +18,13 @@ const (
 	privateToken
 )
 
+const (
+	QualifierSubProject = "BRC"
+	QualifierDirectory  = "DIR"
+	QualifierFile       = "FIL"
+	QualifierProject    = "TRK"
+	QualifierTestFile   = "UTS"
+)
 func (c *Client) BaseURL() *url.URL {
 	u := *c.baseURL
 	return &u
@@ -95,4 +102,11 @@ func (c *Client) NewRequest(method, path string, opt interface{}) (*http.Request
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*http.Response,error) {
 	return Do(c.httpClient, req, v)
+}
+
+//Paging is used in many apis
+type Paging struct {
+	PageIndex int64 `json:"pageIndex,omitempty"`
+	PageSize  int64 `json:"pageSize,omitempty"`
+	Total     int64 `json:"total,omitempty"`
 }
