@@ -5,13 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
+            "name": "Launch file",
             "type": "go",
             "request": "launch",
-            "mode": "auto",
-            "program": "${fileDirname}",
+            "mode": "debug",
+            "program": "${file}",
+            "args": ["-v=2","-logtostderr=true", "-f=../../assets/test1.json", "-e=http://192.168.98.8:9000/api","-o=../../_output/test"],
+            "dlvLoadConfig": {
+                "followPointers": true,
+                "maxVariableRecurse": 1,
+                "maxStringLen": 1000,
+                "maxArrayValues": 64,
+                "maxStructFields": -1
+            }
+        },
+        {
+            "name": "Launch",
+            "preLaunchTask": "build",
+            "type": "go",
+            "request": "launch",
+            "mode": "exec",
+            "program": "C:/Users/Progr/go/src/github.com/magicsong/generate-go-for-sonarqube/_output/app",
             "env": {},
-            "args": ["-v=2","-logtostderr=true", "-f=../../assets/api.json", "-e=http://192.168.98.8:9000/api","-o=../../test"],
+            "args": ["-v=2","-logtostderr=true", "-f=../assets/test1.json", "-e=http://192.168.98.8:9000/api","-o=test"],
             "dlvLoadConfig": {
                 "followPointers": true,
                 "maxVariableRecurse": 1,

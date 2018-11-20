@@ -7,11 +7,14 @@ run: generate
 
 clean:
 	@echo "Remove old generated files, used only in debug mode"
-	rm -rf test
+	rm -rf _output/*
 	rm -rf integration_testing
 
 debug: clean generate
-	go run cmd/main/main.go -logtostderr=true -v=1 -f assets/api.json -o test  -e "http://192.168.98.8:9000/api"
+	go run cmd/main/main.go -logtostderr=true -f assets/api.json -o _output/test  -e "http://192.168.98.8:9000/api"
 
 examples:
-	go run cmd/response/main.go -v=2 -logtostderr=true -f assets/api.json -e "http://192.168.98.8:9000/api"
+	go run cmd/response/main.go -v=1 -logtostderr=true -f assets/api.json -e "http://192.168.98.8:9000/api"
+
+build:
+	go build -o _output/app cmd/main/main.go 

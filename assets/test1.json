@@ -1,0 +1,891 @@
+{
+    "webServices":[
+                {
+            "path": "api/issues",
+            "since": "3.6",
+            "description": "Read and update issues.",
+            "actions": [
+                {
+                    "key": "add_comment",
+                    "description": "Add a comment.<br/>Requires authentication and the following permission: 'Browse' on the project of the specified issue.",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response returns the issue with all its details",
+                            "version": "6.3"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy"
+                        },
+                        {
+                            "key": "text",
+                            "description": "Comment text",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "Won't fix because it doesn't apply to the context"
+                        }
+                    ]
+                },
+                {
+                    "key": "assign",
+                    "description": "Assign/Unassign an issue. Requires authentication and Browse permission on project",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "assignee",
+                            "description": "Login of the assignee. When not set, it will unassign the issue. Use '_me' to assign to current user",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "admin"
+                        },
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy"
+                        },
+                        {
+                            "key": "me",
+                            "description": "(deprecated) Assign the issue to the logged-in user. Replaced by the parameter assignee=_me",
+                            "required": false,
+                            "internal": false,
+                            "deprecatedSince": "5.2",
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "authors",
+                    "description": "Search SCM accounts which match a given query",
+                    "since": "5.1",
+                    "internal": false,
+                    "post": false,
+                    "hasResponseExample": true,
+                    "changelog": [],
+                    "params": [
+                        {
+                            "key": "ps",
+                            "description": "The size of the list to return",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "10",
+                            "exampleValue": "25"
+                        },
+                        {
+                            "key": "q",
+                            "description": "A pattern to match SCM accounts against",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "luke"
+                        }
+                    ]
+                },
+                {
+                    "key": "bulk_change",
+                    "description": "Bulk change on issues.<br/>Requires authentication.",
+                    "since": "3.7",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "'actions' parameter is ignored",
+                            "version": "6.3"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "add_tags",
+                            "description": "Add tags",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "security,java8",
+                            "deprecatedKey": "add_tags.tags",
+                            "deprecatedKeySince": "6.2"
+                        },
+                        {
+                            "key": "assign",
+                            "description": "To assign the list of issues to a specific user (login), or un-assign all the issues",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "john.smith",
+                            "deprecatedKey": "assign.assignee",
+                            "deprecatedKeySince": "6.2"
+                        },
+                        {
+                            "key": "comment",
+                            "description": "To add a comment to a list of issues",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "Here is my comment"
+                        },
+                        {
+                            "key": "do_transition",
+                            "description": "Transition",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "reopen",
+                            "deprecatedKey": "do_transition.transition",
+                            "deprecatedKeySince": "6.2",
+                            "possibleValues": [
+                                "confirm",
+                                "unconfirm",
+                                "reopen",
+                                "resolve",
+                                "falsepositive",
+                                "wontfix",
+                                "close"
+                            ]
+                        },
+                        {
+                            "key": "issues",
+                            "description": "Comma-separated list of issue keys",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy,AU-TpxcA-iU5OvuD2FLz"
+                        },
+                        {
+                            "key": "plan",
+                            "description": "In 5.5, action plans are dropped. Has no effect. To plan the list of issues to a specific action plan (key), or unlink all the issues from an action plan",
+                            "required": false,
+                            "internal": false,
+                            "deprecatedSince": "5.5"
+                        },
+                        {
+                            "key": "remove_tags",
+                            "description": "Remove tags",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "security,java8",
+                            "deprecatedKey": "remove_tags.tags",
+                            "deprecatedKeySince": "6.2"
+                        },
+                        {
+                            "key": "sendNotifications",
+                            "since": "4.0",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "false",
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        },
+                        {
+                            "key": "set_severity",
+                            "description": "To change the severity of the list of issues",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "BLOCKER",
+                            "deprecatedKey": "set_severity.severity",
+                            "deprecatedKeySince": "6.2",
+                            "possibleValues": [
+                                "INFO",
+                                "MINOR",
+                                "MAJOR",
+                                "CRITICAL",
+                                "BLOCKER"
+                            ]
+                        },
+                        {
+                            "key": "set_type",
+                            "description": "To change the type of the list of issues",
+                            "since": "5.5",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "BUG",
+                            "deprecatedKey": "set_type.type",
+                            "deprecatedKeySince": "6.2",
+                            "possibleValues": [
+                                "CODE_SMELL",
+                                "BUG",
+                                "VULNERABILITY"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "changelog",
+                    "description": "Display changelog of an issue.<br/>Requires the 'Browse' permission on the project of the specified issue.",
+                    "since": "4.1",
+                    "internal": false,
+                    "post": false,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "changes on effort is expressed with the raw value in minutes (instead of the duration previously)",
+                            "version": "6.3"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy"
+                        }
+                    ]
+                },
+                {
+                    "key": "delete_comment",
+                    "description": "Delete a comment.<br/>Requires authentication and the following permission: 'Browse' on the project of the specified issue.",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response returns the issue with all its details",
+                            "version": "6.3"
+                        },
+                        {
+                            "description": "the 'key' parameter is renamed 'comment'",
+                            "version": "6.3"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "comment",
+                            "description": "Comment key",
+                            "since": "6.3",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy",
+                            "deprecatedKey": "key",
+                            "deprecatedKeySince": "6.3"
+                        }
+                    ]
+                },
+                {
+                    "key": "do_transition",
+                    "description": "Do workflow transition on an issue. Requires authentication and Browse permission on project.<br/>The transitions 'wontfix' and 'falsepositive' require the permission 'Administer Issues'.",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy"
+                        },
+                        {
+                            "key": "transition",
+                            "description": "Transition",
+                            "required": true,
+                            "internal": false,
+                            "possibleValues": [
+                                "confirm",
+                                "unconfirm",
+                                "reopen",
+                                "resolve",
+                                "falsepositive",
+                                "wontfix",
+                                "close"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "edit_comment",
+                    "description": "Edit a comment.<br/>Requires authentication and the following permission: 'Browse' on the project of the specified issue.",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response returns the issue with all its details",
+                            "version": "6.3"
+                        },
+                        {
+                            "description": "the 'key' parameter has been renamed comment",
+                            "version": "6.3"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "comment",
+                            "description": "Comment key",
+                            "since": "6.3",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy",
+                            "deprecatedKey": "key",
+                            "deprecatedKeySince": "6.3"
+                        },
+                        {
+                            "key": "text",
+                            "description": "Comment text",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "Won't fix because it doesn't apply to the context"
+                        }
+                    ]
+                },
+                {
+                    "key": "search",
+                    "description": "Search for issues.<br>At most one of the following parameters can be provided at the same time: componentKeys, componentUuids, components, componentRootUuids, componentRoots.<br>Requires the 'Browse' permission on the specified project(s).",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": false,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "parameters 'projects', 'projectUuids', 'moduleUuids', 'directories', 'fileUuids' are marked as internal",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "response field 'email' is renamed 'avatar'",
+                            "version": "6.3"
+                        },
+                        {
+                            "description": "response fields 'reporter' and 'actionPlan' are removed (drop of action plan and manual issue features)",
+                            "version": "5.5"
+                        },
+                        {
+                            "description": "parameters 'reporters', 'actionPlans' and 'planned' are dropped and therefore ignored (drop of action plan and manual issue features)",
+                            "version": "5.5"
+                        },
+                        {
+                            "description": "response field 'debt' is renamed 'effort'",
+                            "version": "5.5"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "additionalFields",
+                            "description": "Comma-separated list of the optional fields to be returned in response. Action plans are dropped in 5.5, it is not returned in the response.",
+                            "since": "5.2",
+                            "required": false,
+                            "internal": false,
+                            "possibleValues": [
+                                "_all",
+                                "comments",
+                                "languages",
+                                "actionPlans",
+                                "rules",
+                                "transitions",
+                                "actions",
+                                "users"
+                            ]
+                        },
+                        {
+                            "key": "asc",
+                            "description": "Ascending sort",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "true",
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        },
+                        {
+                            "key": "assigned",
+                            "description": "To retrieve assigned or unassigned issues",
+                            "required": false,
+                            "internal": false,
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        },
+                        {
+                            "key": "assignees",
+                            "description": "Comma-separated list of assignee logins. The value '__me__' can be used as a placeholder for user who performs the request",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "admin,usera,__me__"
+                        },
+                        {
+                            "key": "authors",
+                            "description": "Comma-separated list of SCM accounts",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "torvalds@linux-foundation.org"
+                        },
+                        {
+                            "key": "componentKeys",
+                            "description": "Comma-separated list of component keys. Retrieve issues associated to a specific list of components (and all its descendants). A component can be a portfolio, project, module, directory or file.",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "my_project"
+                        },
+                        {
+                            "key": "componentRootUuids",
+                            "description": "If used, will have the same meaning as componentUuids AND onComponentOnly=false.",
+                            "required": false,
+                            "internal": false,
+                            "deprecatedSince": "5.1"
+                        },
+                        {
+                            "key": "componentRoots",
+                            "description": "If used, will have the same meaning as componentKeys AND onComponentOnly=false.",
+                            "required": false,
+                            "internal": false,
+                            "deprecatedSince": "5.1"
+                        },
+                        {
+                            "key": "componentUuids",
+                            "description": "To retrieve issues associated to a specific list of components their sub-components (comma-separated list of component IDs). This parameter is mostly used by the Issues page, please prefer usage of the componentKeys parameter. A component can be a project, module, directory or file.",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "584a89f2-8037-4f7b-b82c-8b45d2d63fb2",
+                            "deprecatedSince": "6.5"
+                        },
+                        {
+                            "key": "components",
+                            "description": "If used, will have the same meaning as componentKeys AND onComponentOnly=true.",
+                            "required": false,
+                            "internal": false,
+                            "deprecatedSince": "5.1"
+                        },
+                        {
+                            "key": "createdAfter",
+                            "description": "To retrieve issues created after the given date (inclusive). <br>Either a date (server timezone) or datetime can be provided. <br>If this parameter is set, createdSince must not be set",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "2017-10-19 or 2017-10-19T13:00:00+0200"
+                        },
+                        {
+                            "key": "createdAt",
+                            "description": "Datetime to retrieve issues created during a specific analysis",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "2017-10-19T13:00:00+0200"
+                        },
+                        {
+                            "key": "createdBefore",
+                            "description": "To retrieve issues created before the given date (inclusive). <br>Either a date (server timezone) or datetime can be provided.",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "2017-10-19 or 2017-10-19T13:00:00+0200"
+                        },
+                        {
+                            "key": "createdInLast",
+                            "description": "To retrieve issues created during a time span before the current time (exclusive). Accepted units are 'y' for year, 'm' for month, 'w' for week and 'd' for day. If this parameter is set, createdAfter must not be set",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "1m2w (1 month 2 weeks)"
+                        },
+                        {
+                            "key": "facetMode",
+                            "description": "Choose the returned value for facet items, either count of issues or sum of debt.<br/>Since 5.5, 'debt' mode is deprecated and replaced by 'effort'",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "count",
+                            "possibleValues": [
+                                "count",
+                                "effort",
+                                "debt"
+                            ]
+                        },
+                        {
+                            "key": "facets",
+                            "description": "Comma-separated list of the facets to be computed. No facet is computed by default.<br/>Since 5.5, facet 'actionPlans' is deprecated.<br/>Since 5.5, facet 'reporters' is deprecated.",
+                            "required": false,
+                            "internal": false,
+                            "possibleValues": [
+                                "severities",
+                                "statuses",
+                                "resolutions",
+                                "actionPlans",
+                                "projectUuids",
+                                "rules",
+                                "assignees",
+                                "assigned_to_me",
+                                "reporters",
+                                "authors",
+                                "moduleUuids",
+                                "fileUuids",
+                                "directories",
+                                "languages",
+                                "tags",
+                                "types",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "key": "issues",
+                            "description": "Comma-separated list of issue keys",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "5bccd6e8-f525-43a2-8d76-fcb13dde79ef"
+                        },
+                        {
+                            "key": "languages",
+                            "description": "Comma-separated list of languages. Available since 4.4",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "java,js"
+                        },
+                        {
+                            "key": "onComponentOnly",
+                            "description": "Return only issues at a component's level, not on its descendants (modules, directories, files, etc). This parameter is only considered when componentKeys or componentUuids is set. Using the deprecated componentRoots or componentRootUuids parameters will set this parameter to false. Using the deprecated components parameter will set this parameter to true.",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "false",
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        },
+                        {
+                            "key": "p",
+                            "description": "1-based page number",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "1",
+                            "exampleValue": "42",
+                            "deprecatedKey": "pageIndex",
+                            "deprecatedKeySince": "5.2"
+                        },
+                        {
+                            "key": "ps",
+                            "description": "Page size. Must be greater than 0 and less or equal than 500",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "100",
+                            "exampleValue": "20",
+                            "deprecatedKey": "pageSize",
+                            "deprecatedKeySince": "5.2",
+                            "maximumValue": 500
+                        },
+                        {
+                            "key": "resolutions",
+                            "description": "Comma-separated list of resolutions",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "FIXED,REMOVED",
+                            "possibleValues": [
+                                "FALSE-POSITIVE",
+                                "WONTFIX",
+                                "FIXED",
+                                "REMOVED"
+                            ]
+                        },
+                        {
+                            "key": "resolved",
+                            "description": "To match resolved or unresolved issues",
+                            "required": false,
+                            "internal": false,
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        },
+                        {
+                            "key": "rules",
+                            "description": "Comma-separated list of coding rule keys. Format is &lt;repository&gt;:&lt;rule&gt;",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "squid:AvoidCycles"
+                        },
+                        {
+                            "key": "s",
+                            "description": "Sort field",
+                            "required": false,
+                            "internal": false,
+                            "deprecatedKey": "sort",
+                            "deprecatedKeySince": "5.4",
+                            "possibleValues": [
+                                "CREATION_DATE",
+                                "UPDATE_DATE",
+                                "CLOSE_DATE",
+                                "ASSIGNEE",
+                                "SEVERITY",
+                                "STATUS",
+                                "FILE_LINE"
+                            ]
+                        },
+                        {
+                            "key": "severities",
+                            "description": "Comma-separated list of severities",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "BLOCKER,CRITICAL",
+                            "possibleValues": [
+                                "INFO",
+                                "MINOR",
+                                "MAJOR",
+                                "CRITICAL",
+                                "BLOCKER"
+                            ]
+                        },
+                        {
+                            "key": "sinceLeakPeriod",
+                            "description": "To retrieve issues created since the leak period.<br>If this parameter is set to a truthy value, createdAfter must not be set and one component id or key must be provided.",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "false",
+                            "possibleValues": [
+                                "true",
+                                "false",
+                                "yes",
+                                "no"
+                            ]
+                        },
+                        {
+                            "key": "statuses",
+                            "description": "Comma-separated list of statuses",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "OPEN,REOPENED",
+                            "possibleValues": [
+                                "OPEN",
+                                "CONFIRMED",
+                                "REOPENED",
+                                "RESOLVED",
+                                "CLOSED"
+                            ]
+                        },
+                        {
+                            "key": "tags",
+                            "description": "Comma-separated list of tags.",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "security,convention"
+                        },
+                        {
+                            "key": "types",
+                            "description": "Comma-separated list of types.",
+                            "since": "5.5",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "CODE_SMELL,BUG",
+                            "possibleValues": [
+                                "CODE_SMELL",
+                                "BUG",
+                                "VULNERABILITY"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "set_severity",
+                    "description": "Change severity.<br/>Requires the following permissions:<ul>  <li>'Authentication'</li>  <li>'Browse' rights on project of the specified issue</li>  <li>'Administer Issues' rights on project of the specified issue</li></ul>",
+                    "since": "3.6",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy"
+                        },
+                        {
+                            "key": "severity",
+                            "description": "New severity",
+                            "required": true,
+                            "internal": false,
+                            "possibleValues": [
+                                "INFO",
+                                "MINOR",
+                                "MAJOR",
+                                "CRITICAL",
+                                "BLOCKER"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "set_tags",
+                    "description": "Set tags on an issue. <br/>Requires authentication and Browse permission on project",
+                    "since": "5.1",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "response contains issue information instead of list of tags",
+                            "version": "6.4"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "since": "6.3",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy",
+                            "deprecatedKey": "key",
+                            "deprecatedKeySince": "6.3"
+                        },
+                        {
+                            "key": "tags",
+                            "description": "Comma-separated list of tags. All tags are removed if parameter is empty or not set.",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "security,cwe,misra-c"
+                        }
+                    ]
+                },
+                {
+                    "key": "set_type",
+                    "description": "Change type of issue, for instance from 'code smell' to 'bug'.<br/>Requires the following permissions:<ul>  <li>'Authentication'</li>  <li>'Browse' rights on project of the specified issue</li>  <li>'Administer Issues' rights on project of the specified issue</li></ul>",
+                    "since": "5.5",
+                    "internal": false,
+                    "post": true,
+                    "hasResponseExample": true,
+                    "changelog": [
+                        {
+                            "description": "the database ids of the components are removed from the response",
+                            "version": "6.5"
+                        },
+                        {
+                            "description": "the response field components.uuid is deprecated. Use components.key instead.",
+                            "version": "6.5"
+                        }
+                    ],
+                    "params": [
+                        {
+                            "key": "issue",
+                            "description": "Issue key",
+                            "required": true,
+                            "internal": false,
+                            "exampleValue": "AU-Tpxb--iU5OvuD2FLy"
+                        },
+                        {
+                            "key": "type",
+                            "description": "New type",
+                            "required": true,
+                            "internal": false,
+                            "possibleValues": [
+                                "CODE_SMELL",
+                                "BUG",
+                                "VULNERABILITY"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "tags",
+                    "description": "List tags matching a given query",
+                    "since": "5.1",
+                    "internal": false,
+                    "post": false,
+                    "hasResponseExample": true,
+                    "changelog": [],
+                    "params": [
+                        {
+                            "key": "ps",
+                            "description": "Page size. Must be greater than 0 and less or equal than 100",
+                            "required": false,
+                            "internal": false,
+                            "defaultValue": "10",
+                            "exampleValue": "20",
+                            "deprecatedKey": "pageSize",
+                            "deprecatedKeySince": "5.2",
+                            "maximumValue": 100
+                        },
+                        {
+                            "key": "q",
+                            "description": "Limit search to tags that contain the supplied string.",
+                            "required": false,
+                            "internal": false,
+                            "exampleValue": "misra"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

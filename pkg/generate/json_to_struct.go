@@ -8,13 +8,15 @@ import (
 	"github.com/magicsong/generate-go-for-sonarqube/pkg/gojson"
 )
 
+var converter = gojson.NewJSONToGOConverter()
+
 func ConvertStringToStruct(json, name string) (string, error) {
 	if json == "" {
 		return "", errors.New("Json string must no be empty")
 	}
 	reader := new(bytes.Buffer)
 	reader.WriteString(json)
-	byts, err := gojson.Generate(reader, gojson.ParseJson, name, []string{"json"}, true, true)
+	byts, err := converter.Generate(reader, gojson.ParseJson, name, []string{"json"}, true)
 	if err != nil {
 		return "", err
 	}
@@ -28,7 +30,7 @@ func UnionJSONToStruct(jsons []string, name string) (string, error) {
 	reader.WriteString("[")
 	reader.WriteString(strings.Join(jsons, ","))
 	reader.WriteString("]")
-	byts, err := gojson.Generate(reader, gojson.ParseJson, name, []string{"json"}, false, true)
+	byts, err := converter.Generate(reader, gojson.ParseJson, name, []string{"json"}, true)
 	if err != nil {
 		return "", err
 	}
