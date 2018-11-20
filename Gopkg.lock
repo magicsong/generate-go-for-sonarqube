@@ -3,29 +3,7 @@
 
 [[projects]]
   name = "github.com/Workiva/go-datastructures"
-  packages = [
-    ".",
-    "augmentedtree",
-    "bitarray",
-    "btree/palm",
-    "btree/plus",
-    "common",
-    "fibheap",
-    "futures",
-    "hashmap/fastinteger",
-    "numerics/optimization",
-    "queue",
-    "rangetree",
-    "rangetree/skiplist",
-    "set",
-    "slice",
-    "slice/skip",
-    "sort",
-    "threadsafe/err",
-    "tree/avl",
-    "trie/xfast",
-    "trie/yfast"
-  ]
+  packages = ["bitarray"]
   revision = "f07cbe3f82ca2fd6e5ab94afce65fe43319f675f"
   version = "v1.0.50"
 
@@ -46,6 +24,12 @@
   packages = ["."]
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
   version = "v1.7.0"
+
+[[projects]]
+  name = "github.com/fatih/set"
+  packages = ["."]
+  revision = "2c768e3c5489976167bfc42b5c7c92ca783f4389"
+  version = "v0.2.1"
 
 [[projects]]
   name = "github.com/google/go-querystring"
@@ -207,6 +191,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3b0000574b596e864e59113b7385372148b271cdce22a8b8e52b39f206e42c0f"
+  inputs-digest = "ad9690e7c1c45626037fd89f8c964c8e1653b6dc54ee5b4d8c2198b2b3f16dea"
   solver-name = "gps-cdcl"
   solver-version = 1

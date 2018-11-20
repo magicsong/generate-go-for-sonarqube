@@ -109,7 +109,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/Workiva/go-datastructures/bitarray"
+	"github.com/fatih/set"
 
 	"github.com/json-iterator/go"
 	"gopkg.in/yaml.v2"
@@ -169,21 +169,21 @@ var intToWordMap = []string{
 	"nine",
 }
 
+const (
+	SmartGuessThreshold = 0.6
+)
+
 type JSONToGoConverter interface {
 	Generate(input io.Reader, parser Parser, structName string, tags []string, convertFloats bool) ([]byte, error)
 }
 
 type JSONToGO struct {
-	cache         map[string]bitarray.BitArray
-	currentIndex  uint64
-	fieldPosition map[string]uint64
+	cache map[string]set.Interface
 }
 
 func NewJSONToGOConverter() JSONToGoConverter {
 	return &JSONToGO{
-		cache:         make(map[string]bitarray.BitArray),
-		fieldPosition: make(map[string]uint64),
-		currentIndex:  0,
+		cache: make(map[string]set.Interface),
 	}
 }
 
@@ -295,16 +295,22 @@ func convertKeysToStrings(obj map[interface{}]interface{}) map[string]interface{
 	return res
 }
 
-func (s *JSONToGO) GetExistStruct(bits bitarray.BitArray) (string, bool) {
-	for index, item := range s.cache {
-		if item.And(bits).Equals(bits) {
-			return index, true
+func (s *JSONToGO) GetExistStruct(se set.Interface, name string) (string, bool) {
+	if v, ok := s.cache[name]; ok {
+		if se.IsSubset(v) {
+			return "", true
 		}
-		if item.And(bits).Equals(item) && !(item.Equals(bits)) {
-			s.cache[index] = bits
-			return index, false
+		c := set.Intersection(v, se)
+		if float64(c.Size()) >= (float64(se.Size()) * SmartGuessThreshold) {
+			return name, false
 		}
 	}
+	for index, item := range s.cache {
+		if item.IsSuperset(se) {
+			return index, true
+		}
+	}
+
 	return "", false
 }
 
@@ -318,28 +324,21 @@ func smartName(key string, isArray bool) string {
 
 // generateTypes Generate go struct entries for a map[string]interface{} structure
 func (s *JSONToGO) generateTypes(obj map[string]interface{}, structName string, tags []string, depth int, subStructMap map[string]string, convertFloats bool) (string, string) {
-	bits := bitarray.NewSparseBitArray()
+	set := set.New(set.NonThreadSafe)
 	structure := "struct {"
 	keys := make([]string, 0, len(obj))
 	for key := range obj {
-		if val, ok := s.fieldPosition[key]; ok {
-			bits.SetBit(val)
-		} else {
-			s.fieldPosition[key] = s.currentIndex
-			bits.SetBit(s.currentIndex)
-			s.currentIndex++
-		}
+		set.Add(key)
 		keys = append(keys, key)
 	}
-	needUpdate := ""
-	if val, ok := s.GetExistStruct(bits); ok {
+
+	if val, ok := s.GetExistStruct(set, structName); ok {
 		return "", val
 	} else {
 		if val != "" {
-			needUpdate = val
+			s.cache[structName].Merge(set)
 		}
 	}
-	s.cache[structName] = bits
 	sort.Strings(keys)
 
 	for _, key := range keys {
@@ -371,11 +370,7 @@ func (s *JSONToGO) generateTypes(obj map[string]interface{}, structName string, 
 				}
 
 				if sub != "" {
-					if needUpdate != "" {
-						subStructMap[needUpdate] = sub
-					} else {
-						subStructMap[subName] = sub
-					}
+					subStructMap[subName] = sub
 					valueType = "[] *" + subName
 				}
 			}
@@ -386,11 +381,7 @@ func (s *JSONToGO) generateTypes(obj map[string]interface{}, structName string, 
 				valueType = subN
 			} else {
 				sub = sub + "}"
-				if needUpdate != "" {
-					subStructMap[needUpdate] = sub
-				} else {
-					subStructMap[subName] = sub
-				}
+				subStructMap[subName] = sub
 				valueType = "*" + subName
 			}
 
@@ -401,11 +392,7 @@ func (s *JSONToGO) generateTypes(obj map[string]interface{}, structName string, 
 				valueType = subN
 			} else {
 				sub = sub + "}"
-				if needUpdate != "" {
-					subStructMap[needUpdate] = sub
-				} else {
-					subStructMap[subName] = sub
-				}
+				subStructMap[subName] = sub
 				valueType = "*" + subName
 			}
 		}
