@@ -322,9 +322,9 @@ func (s *JSONToGO) GetExistStruct(se set.Interface, name string) (string, bool) 
 		}
 	}
 	for index, item := range s.cache {
-		if item.IsSuperset(se) {
+		if item.IsSubset(se) {
 			s.nameConvert[name] = index
-			glog.Warningf("%s is consider same as %s, Be Careful", name, index)
+			glog.Warningf("[Attention] %s is consider same as %s, There num is %v and %v", name, index, item.List(), se.List())
 			return index, true
 		}
 		c := set.Intersection(item, se)

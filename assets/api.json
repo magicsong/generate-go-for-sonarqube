@@ -8583,7 +8583,7 @@
         {
             "path": "api/webservices",
             "since": "4.2",
-            "description": "Get information on the web api supported on this instance.",
+            "description": "Get information on the web api supported on this instance. NOT_IN_CLI",
             "actions": [
                 {
                     "key": "list",
