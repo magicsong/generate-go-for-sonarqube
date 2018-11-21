@@ -324,7 +324,12 @@ func (s *JSONToGO) GetExistStruct(se set.Interface, name string) (string, bool) 
 	for index, item := range s.cache {
 		if item.IsSuperset(se) {
 			s.nameConvert[name] = index
+			glog.Warningf("%s is consider same as %s, Be Careful", name, index)
 			return index, true
+		}
+		c := set.Intersection(item, se)
+		if float64(c.Size()) >= (float64(se.Size())*(SmartGuessThreshold+0.2)) && (c.Size()*2 > item.Size()) {
+			return index, false
 		}
 	}
 
@@ -333,8 +338,13 @@ func (s *JSONToGO) GetExistStruct(se set.Interface, name string) (string, bool) 
 
 func smartName(key string, isArray bool) string {
 	key = FmtFieldName(key)
-	if isArray && key[len(key)-1] == 's' {
-		return strings.Title(key[:len(key)-1])
+	if isArray {
+		if key[len(key)-2:] == "es" {
+			return strings.Title(key[:len(key)-2])
+		}
+		if key[len(key)-1] == 's' {
+			return strings.Title(key[:len(key)-1])
+		}
 	}
 	return strings.Title(key)
 }
