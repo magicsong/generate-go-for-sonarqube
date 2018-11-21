@@ -1,0 +1,66 @@
+type Current struct {
+	AnalysisID         string `json:"analysisId,omitempty"`
+	ComponentID        string `json:"componentId,omitempty"`
+	ComponentKey       string `json:"componentKey,omitempty"`
+	ComponentName      string `json:"componentName,omitempty"`
+	ComponentQualifier string `json:"componentQualifier,omitempty"`
+	ErrorMessage       string `json:"errorMessage,omitempty"`
+	ErrorType          string `json:"errorType,omitempty"`
+	ExecutionTimeMs    int64  `json:"executionTimeMs,omitempty"`
+	FinishedAt         string `json:"finishedAt,omitempty"`
+	HasErrorStacktrace bool   `json:"hasErrorStacktrace,omitempty"`
+	HasScannerContext  bool   `json:"hasScannerContext,omitempty"`
+	ID                 string `json:"id,omitempty"`
+	Logs               bool   `json:"logs,omitempty"`
+	Organization       string `json:"organization,omitempty"`
+	StartedAt          string `json:"startedAt,omitempty"`
+	Status             string `json:"status,omitempty"`
+	SubmittedAt        string `json:"submittedAt,omitempty"`
+	Type               string `json:"type,omitempty"`
+}
+type Task struct {
+	AnalysisID         string `json:"analysisId,omitempty"`
+	ComponentID        string `json:"componentId,omitempty"`
+	ComponentKey       string `json:"componentKey,omitempty"`
+	ComponentName      string `json:"componentName,omitempty"`
+	ComponentQualifier string `json:"componentQualifier,omitempty"`
+	ErrorMessage       string `json:"errorMessage,omitempty"`
+	ErrorStacktrace    string `json:"errorStacktrace,omitempty"`
+	ExecutedAt         string `json:"executedAt,omitempty"`
+	ExecutionTimeMs    int64  `json:"executionTimeMs,omitempty"`
+	HasErrorStacktrace bool   `json:"hasErrorStacktrace,omitempty"`
+	HasScannerContext  bool   `json:"hasScannerContext,omitempty"`
+	ID                 string `json:"id,omitempty"`
+	Logs               bool   `json:"logs,omitempty"`
+	Organization       string `json:"organization,omitempty"`
+	ScannerContext     string `json:"scannerContext,omitempty"`
+	StartedAt          string `json:"startedAt,omitempty"`
+	Status             string `json:"status,omitempty"`
+	SubmittedAt        string `json:"submittedAt,omitempty"`
+	Type               string `json:"type,omitempty"`
+}
+
+-------Generated code-------
+type Task struct {
+AnalysisID string `json:"analysisId,omitempty"`
+ComponentID string `json:"componentId,omitempty"`
+ComponentKey string `json:"componentKey,omitempty"`
+ComponentName string `json:"componentName,omitempty"`
+ComponentQualifier string `json:"componentQualifier,omitempty"`
+ErrorMessage string `json:"errorMessage,omitempty"`
+ErrorStacktrace string `json:"errorStacktrace,omitempty"`
+ErrorType string `json:"errorType,omitempty"`
+ExecutedAt string `json:"executedAt,omitempty"`
+ExecutionTimeMs int64 `json:"executionTimeMs,omitempty"`
+FinishedAt string `json:"finishedAt,omitempty"`
+HasErrorStacktrace bool `json:"hasErrorStacktrace,omitempty"`
+HasScannerContext bool `json:"hasScannerContext,omitempty"`
+ID string `json:"id,omitempty"`
+Logs bool `json:"logs,omitempty"`
+Organization string `json:"organization,omitempty"`
+ScannerContext string `json:"scannerContext,omitempty"`
+StartedAt string `json:"startedAt,omitempty"`
+Status string `json:"status,omitempty"`
+SubmittedAt string `json:"submittedAt,omitempty"`
+Type string `json:"type,omitempty"`
+}

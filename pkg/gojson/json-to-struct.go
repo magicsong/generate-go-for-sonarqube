@@ -109,6 +109,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/magicsong/color-glog"
+
 	"github.com/fatih/set"
 
 	"github.com/json-iterator/go"
@@ -175,15 +177,23 @@ const (
 
 type JSONToGoConverter interface {
 	Generate(input io.Reader, parser Parser, structName string, tags []string, convertFloats bool) ([]byte, error)
+	GetNameConvert() map[string]string
 }
 
 type JSONToGO struct {
-	cache map[string]set.Interface
+	ignoreList  []string
+	cache       map[string]set.Interface
+	nameConvert map[string]string
 }
 
-func NewJSONToGOConverter() JSONToGoConverter {
+func (s *JSONToGO) GetNameConvert() map[string]string {
+	return s.nameConvert
+}
+func NewJSONToGOConverter(ignoreList ...string) JSONToGoConverter {
 	return &JSONToGO{
-		cache: make(map[string]set.Interface),
+		cache:       make(map[string]set.Interface),
+		ignoreList:  ignoreList,
+		nameConvert: make(map[string]string),
 	}
 }
 
@@ -296,9 +306,15 @@ func convertKeysToStrings(obj map[interface{}]interface{}) map[string]interface{
 }
 
 func (s *JSONToGO) GetExistStruct(se set.Interface, name string) (string, bool) {
+	for _, item := range s.ignoreList {
+		if item == name {
+			return name, true
+		}
+	}
+
 	if v, ok := s.cache[name]; ok {
-		if se.IsSubset(v) {
-			return "", true
+		if se.IsSubset(v) || se.IsEqual(v) {
+			return name, true
 		}
 		c := set.Intersection(v, se)
 		if float64(c.Size()) >= (float64(se.Size()) * SmartGuessThreshold) {
@@ -307,6 +323,7 @@ func (s *JSONToGO) GetExistStruct(se set.Interface, name string) (string, bool) 
 	}
 	for index, item := range s.cache {
 		if item.IsSuperset(se) {
+			s.nameConvert[name] = index
 			return index, true
 		}
 	}
@@ -333,10 +350,14 @@ func (s *JSONToGO) generateTypes(obj map[string]interface{}, structName string, 
 	}
 
 	if val, ok := s.GetExistStruct(set, structName); ok {
+		glog.V(3).Infof("Detected redeclaration of struct %s, try to skip", structName)
 		return "", val
 	} else {
 		if val != "" {
-			s.cache[structName].Merge(set)
+			glog.Warningf("Detected struct %s may be same as %s, Please Merge it manualy", structName, val)
+			s.cache[val].Merge(set)
+		} else {
+			s.cache[structName] = set
 		}
 	}
 	sort.Strings(keys)
@@ -356,6 +377,7 @@ func (s *JSONToGO) generateTypes(obj map[string]interface{}, structName string, 
 				if v, ok := value[0].(map[interface{}]interface{}); ok {
 					t, subN := s.generateTypes(convertKeysToStrings(v), subName, tags, depth+1, subStructMap, convertFloats)
 					if subN != "" {
+						glog.V(0).Infoln("DEBUG: t:=" + t)
 						valueType = "[] *" + subN
 					} else {
 						sub = t + "}"

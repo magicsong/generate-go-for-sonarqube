@@ -8,7 +8,7 @@ import (
 	"github.com/magicsong/generate-go-for-sonarqube/pkg/gojson"
 )
 
-var converter = gojson.NewJSONToGOConverter()
+var converter = gojson.NewJSONToGOConverter("Paging")
 
 func ConvertStringToStruct(json, name string) (string, error) {
 	if json == "" {

@@ -17,6 +17,7 @@ import (
 
 var (
 	h           bool
+	NoTest      bool
 	JsonPath    string
 	OutputPath  string
 	PackageName string
@@ -27,6 +28,7 @@ var (
 
 func init() {
 	flag.BoolVar(&h, "h", false, "this help")
+	flag.BoolVar(&NoTest, "no-test", false, "should ignore generating test files")
 	flag.StringVar(&JsonPath, "f", "", "specify location of api file(only support local file)")
 	flag.StringVar(&OutputPath, "o", ".", "specify the destination dir, default is current workspace")
 	flag.StringVar(&PackageName, "n", "sonarqube", "specify the name of generated package,default is \"sonarqube\"")
@@ -76,7 +78,7 @@ func main() {
 		glog.Errorln("cannot decode api file")
 		os.Exit(1)
 	}
-	err = generate.Build(PackageName, OutputPath, Endpoint, Username, Password, myapi)
+	err = generate.Build(PackageName, OutputPath, Endpoint, Username, Password, NoTest, myapi)
 	if err != nil {
 		glog.Fatal(err)
 	} else {
@@ -86,7 +88,7 @@ func main() {
 
 func usage() {
 	fmt.Fprintf(os.Stderr, ` generate-go-for-sonarqube version: 0.0.1
-Usage: main.go [-h] -f jsonpath  -e endpoint [-n packagename] [-o outputpath]  [-u username] [-p password] 
+Usage: main.go [-h] -f jsonpath  -e endpoint [-n packagename] [-o outputpath]  [-u username] [-p password] [-no-test] 
 
 Options:
 `)
