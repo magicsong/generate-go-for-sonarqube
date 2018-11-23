@@ -282,7 +282,7 @@ func AddIntegrationFile(service *api.WebService) error {
 					if hasResp {
 						g2.Id("Expect").Call(Op("*").Id("v")).Dot("To").Call(Id("Equal").Call(Lit("MUST_EDIT_IT")))
 					} else {
-						g2.Id("Expect").Call(Id("resp").Dot("ContentLength")).Dot("To").Call(Id("Equal").Call(Id("0")))
+						g2.Id("Expect").Call(Id("resp").Dot("ContentLength")).Dot("To").Call(Id("BeZero").Call())
 					}
 				}))
 			}))
