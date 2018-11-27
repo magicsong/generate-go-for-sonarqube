@@ -35,7 +35,9 @@ func (e *ExampleFetcher) GetResponseExample(service *api.WebService) (examples [
 		glog.V(3).Infof("%s of service %s HAVE examples", action.Key, service.Path)
 		resp, err := c.Webservices.ResponseExample(opt)
 		if err != nil {
-			return nil, err
+			glog.Errorf("cannot fetch example of %s of %s", action.Key, service.Path)
+			glog.Errorln(err.Error())
+			continue
 		}
 		examples = append(examples, resp)
 		service.Actions[index].ResponseType = resp.Format

@@ -331,7 +331,6 @@ func GenerateGoContent(packageName string, service *api.WebService) (f *File, er
 	examples, err := fetcher.GetResponseExample(service)
 	if err != nil {
 		glog.Errorf("cannot fetch examples of <%s>", service.Path)
-		return nil, err
 	}
 	for _, exam := range examples {
 		if exam.Format != "json" {
